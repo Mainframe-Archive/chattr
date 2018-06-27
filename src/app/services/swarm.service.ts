@@ -13,22 +13,46 @@ export class SwarmService {
   private _account: string = null;
   private _web3: any;
 
-  a_varabile = true;
-
   constructor() {
+    this.setupWeb3();
+  }
+
+  private setupWeb3() {
     if (typeof window.web3 !== 'undefined') {
       // Use Mist/MetaMask's provider
       this._web3 = new Web3(window.web3.currentProvider);
-      console.log('this._web3.version: ', this._web3.version);
-      if (this._web3.version.network !== '4') {
-        alert('Please connect to the Ropsten network');
-      }
+
+      this._web3.eth.net.getId().then(this.verifyRopstenIsActive);
     } else {
       console.warn(
         'Please use a dapp browser like mist or MetaMask plugin for chrome'
       );
     }
+  }
 
+  private verifyRopstenIsActive(netId) {
+    switch (netId) {
+      case 1:
+        console.log('This is mainnet');
+        break;
+      case 2:
+        console.log('This is the deprecated Morden test network.');
+        break;
+      case 3:
+        console.log('This is the ropsten test network.');
+        break;
+      case 4:
+        console.log('This is the Rinkeby test network.');
+        break;
+      case 42:
+        console.log('This is the Kovan test network.');
+        break;
+      default:
+        console.log('This is an unknown network.');
+    }
+    if (netId !== 3) {
+      alert('Please connect to the Ropsten test network');
+    }
   }
 
   private async getAccount(): Promise<string> {
@@ -61,8 +85,8 @@ export class SwarmService {
 
     return new Promise((resolve, reject) => {
       let _web3 = this._web3;
-      resolve(_web3.eth.getBalance(account).toNumber());
-
+      // resolve(_web3.eth.getBalance(account).toNumber());
+      resolve(3);
       // this._tokenContract.balanceOf.call(account, function (err, result) {
       //   if(err != null) {
       //     reject(err);

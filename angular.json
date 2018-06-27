@@ -25,7 +25,7 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": ["src/app/scripts/web3.min.js"]
+            "scripts": ["src/app/scripts/web3.js"]
           },
           "configurations": {
             "production": {
