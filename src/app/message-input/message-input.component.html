@@ -1,3 +1,8 @@
-<p>
-  message-input works!
-</p>
+<div class="controls" class="field has-addons">
+  <div class="control is-expanded">
+    <input  [ngModel]="message" class="input is-primary" placeholder="Write message">
+  </div>
+  <div class="control">
+    <button (click)="send" [disabled]="!message" class="button is-primary">Send</button>
+  </div>
+</div>

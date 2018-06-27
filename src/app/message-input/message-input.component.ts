@@ -7,9 +7,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MessageInputComponent implements OnInit {
 
+  message = '';
+
   constructor() { }
 
   ngOnInit() {
+  }
+
+  send() {
+    console.log('send was clicked: ', this.message);
   }
 
 }

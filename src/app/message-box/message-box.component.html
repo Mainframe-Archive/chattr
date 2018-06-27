@@ -1,3 +1,12 @@
-<p>
-  message-box works!
-</p>
+<div class="box" [hidden]="hidden">
+  <div class="messages">
+    <ul>
+      <li gFor="let message of messages">
+        <app-message [messageData]="message"></app-message>
+      </li>
+    </ul>
+  </div>
+  <!-- inputs new message -->
+  <!--<input-message v-on:send-message="sendMessage"></input-message>-->
+  <app-message-input> </app-message-input>
+</div>

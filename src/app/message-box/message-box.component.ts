@@ -7,6 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MessageBoxComponent implements OnInit {
 
+  hidden = false;
+
   constructor() { }
 
   ngOnInit() {
