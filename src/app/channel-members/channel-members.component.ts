@@ -7,9 +7,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ChannelMembersComponent implements OnInit {
 
+  users = [];
+  isHidden = true;
+
   constructor() { }
 
   ngOnInit() {
+    this.users.push({name: 'doug'});
   }
+
 
 }

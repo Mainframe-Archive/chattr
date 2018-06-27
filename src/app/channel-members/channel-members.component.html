@@ -1,3 +1,14 @@
-<p>
-  channel-members works!
-</p>
+<div [hidden]="isHidden">
+  <h4 class="title is-4">Current users ({{users.length}})</h4>
+  <ul>
+    <li ngFor="let user of users">
+      <div class="media-content">
+        <div class="content">
+          <p>
+            <strong>{{user && user.name}}</strong>
+          </p>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
