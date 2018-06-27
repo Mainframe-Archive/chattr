@@ -1,3 +1,10 @@
-<p>
-  identity works!
-</p>
+<div id="nameInput" [hidden]="isHidden">
+  <div class="field is-grouped">
+    <div class="control">
+      <input [(ngModel)]="userName" #title='ngModel' #title='ngModel' class="input is-primary" placeholder="Your username">
+    </div>
+    <div class="control">
+      <button (click)="clickSubmit()" [disabled]="!userName" class="button is-primary">Submit</button>
+    </div>
+  </div>
+</div>

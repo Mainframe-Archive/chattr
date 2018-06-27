@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {SwarmService} from '../services/swarm.service';
 
 @Component({
   selector: 'app-identity',
@@ -7,9 +8,24 @@ import { Component, OnInit } from '@angular/core';
 })
 export class IdentityComponent implements OnInit {
 
-  constructor() { }
+  userName = '';
+  isHidden = false;
+
+
+  constructor(ss: SwarmService) { }
 
   ngOnInit() {
+  }
+
+  clickSubmit() {
+    console.log(this.userName);
+    if (this.userName) {
+      this.toggleHidden();
+    }
+  }
+
+  toggleHidden() {
+    this.isHidden = !this.isHidden;
   }
 
 }
