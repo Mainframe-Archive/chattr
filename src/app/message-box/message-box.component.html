@@ -1,7 +1,8 @@
 <div class="box" [hidden]="hidden">
   <div class="messages">
     <ul>
-      <li gFor="let message of messages">
+      <li *ngFor="let message of messages">
+        <!--{{message}}-->
         <app-message [messageData]="message"></app-message>
       </li>
     </ul>
