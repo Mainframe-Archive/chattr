@@ -12,6 +12,7 @@ export class MessageBoxComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+
   }
 
 }
