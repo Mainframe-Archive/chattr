@@ -8,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 export class ChannelMembersComponent implements OnInit {
 
   users = [];
-  isHidden = true;
+  isHidden = false;
 
   constructor() { }
 
