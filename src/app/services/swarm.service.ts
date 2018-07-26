@@ -101,7 +101,7 @@ export class SwarmService {
     return Promise.resolve(this.networkName);
   }
 
-  private async getAccount(): Promise<string> {
+  public async getAccount(): Promise<string> {
     if (this._account == null) {
       this._account = await new Promise((resolve, reject) => {
         this._web3.eth.getAccounts((err, accs) => {

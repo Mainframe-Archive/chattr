@@ -14,10 +14,12 @@ export class IdentityComponent implements OnInit {
   usingRopsten: boolean;
   notificationColor: string = null;
   hideNotification = false;
+  identity = '';
 
   constructor(ss: SwarmService) {
     ss.getNetworkName().then(name => this.networkName = name);
     ss.getNetworkID().then((netID) => this.setNotificationColor(netID));
+    ss.getAccount().then((identity) => this.identity = identity);
   }
 
   private checkForRopsten(netID: number): boolean {
