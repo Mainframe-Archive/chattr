@@ -37,3 +37,4 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+firebase_mock_api/functions/node_modules

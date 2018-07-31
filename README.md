@@ -15,6 +15,7 @@ You and a friend launch chattr by navigating to bzz://example.eth which presumab
 
 ## Road Map
 ### v0.1 
+Project status and progress is managed on our [integrated kanban board](https://github.com/MainframeHQ/chattr/projects/1).
 - [ ] Users may see their identity (to share it with a channel creator)
 - [ ] Users may create a channel
 - [ ] Users may add identities to a channel
@@ -24,29 +25,40 @@ You and a friend launch chattr by navigating to bzz://example.eth which presumab
 **TBD**
 
 
-### Angular Details
+## Helpful Resources
+[Swarm Chat MRU Protocol](https://hackmd.io/s/HJf7j5cb7)
+
+
+## Development
+[Install Angular CLI](https://github.com/angular/angular-cli/blob/master/packages/angular/cli/README.md#installation)
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.8.
 
-## Development server
+### Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-## Code scaffolding
+### Code scaffolding
 
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
-## Build
+### Build
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
-## Running unit tests
+### Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Running end-to-end tests
+### Running end-to-end tests
 
 Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
-## Further help
+### Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+
+## Contributing
+
+Submit an issue or fork the repo and submit a pull request for review.
