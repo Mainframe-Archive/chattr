@@ -105,3 +105,33 @@ exports.download = functions.https.onRequest((req, res) => {
   });
 });
 
+
+
+const express = require('express');
+const app = express();
+app.use(cors);
+
+app.get('/bzz-resource:/:eth_domain/:period', (req, res) => {
+  res.status(200).send(`eth_domain: ${req.params.eth_domain}, period: ${req.params.period}`);
+});
+
+app.get('/bzz-resource:/:eth_domain/:period/:version', (req, res) => {
+  res.status(200).send(`eth_domain: ${req.params.eth_domain}, period: ${req.params.period}, version: ${req.params.version}`);
+});
+
+app.post('/bzz-resource:/:eth_domain/', (req, res) => {
+  res.status(200).send(`eth_domain: ${req.params.eth_domain}`);
+});
+
+
+exports.mock_api = functions.https.onRequest(app);
+
+
+
+// Some quick and dirty notes about the easiest way I could implement this:
+
+// doug.eth is a psudo-manifest file (meaning it just has the fields I need here in this implementation)
+
+// When a resource is updated, I create entries that are something to the effect of a pointer to the previous event
+// using the current event hash + the postfix 'previous' e.g. adfsasdfajsdlasdfasdfasfdsfsdfadsffd_previous
+// this will just contain the file name / address of the previous event.
