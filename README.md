@@ -1,13 +1,13 @@
 # Chattr
->A minimal chat app ontop of swarm mutable resources.
+>A minimal chat app ontop of swarm feeds.
 
-The goal of this project is to simply demonstrate how chat can be done using Swarm Mutable Resource Updates (MRUs). Because of this, peer discovery is to be done out of band and is considered out of the scope of our intentions here. Aspects of this project may not end up being the most user-friendly, this is okay.
+The goal of this project is to simply demonstrate how chat can be done using Swarm Feeds (formerly Swarm Mutable Resource Updates (MRUs)). Because of this, peer discovery is to be done out of band and is considered out of the scope of our intentions here. Aspects of this project may not end up being the most user-friendly, this is okay.
 
 ## Implementation
 
-For peers to begin chatting, one must first create a channel. The channel data structure lists the identites of each participant. Once created, clients may watch this mutable resource to recieve updates when new identities join the channel.
+For peers to begin chatting, one must first create a channel struct with the topic of 'chat' and the desired title of the channel being assigned to the name / subtopic of the feed. The channel data structure lists the identities of each participant. Once created, clients may watch this feed to receive updates when new identities are added to the channel.
 
-The identites are (for now) a channel specific address hash of a mutable resource created by the owning peer. Clients observe each of these resources to recieve updated events.
+The identities are (for now) a channel specific Swarm Feed address created by the owning peer. Clients observe each of these resources to recieve updated events.
 
 ## Getting Started
 ### Example User Flow
@@ -26,8 +26,8 @@ Project status and progress is managed on our [integrated kanban board](https://
 
 
 ## Helpful Resources
-[Swarm Chat MRU Protocol](https://hackmd.io/s/HJf7j5cb7)
-
+[Swarm Feed Chat Protocol](https://hackmd.io/s/HJf7j5cb7)
+  
 
 ## Development
 [Install Angular CLI](https://github.com/angular/angular-cli/blob/master/packages/angular/cli/README.md#installation)

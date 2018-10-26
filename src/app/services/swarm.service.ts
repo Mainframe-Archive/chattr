@@ -1,7 +1,17 @@
 import { Injectable } from '@angular/core';
-import {Observable} from 'rxjs';
-// import * as W3 from 'web3';
+import { Observable, of } from 'rxjs';
+import { map, catchError, tap } from 'rxjs/operators';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+
 const Web3 = require('web3'); // tslint:disable-line
+
+const endpoint = 'http://localhost:8500/';
+
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Content-Type':  'application/json'
+  })
+};
 
 declare let window: any;
 
@@ -17,8 +27,39 @@ export class SwarmService {
   networkID: number;
   networkName: string = null;
 
-  constructor() {
+  constructor(private http: HttpClient) {
     this.setupWeb3();
+  }
+
+  private extractData(res: Response) {
+    const body = res;
+    return body || { };
+  }
+
+  getChannel(hash): Observable<any> {
+    return this.http.get(endpoint + 'bzz:/' + hash + '/').pipe(
+      map(this.extractData));
+  }
+
+  updateChannel(hash, channel): Observable<any> {
+    return this.http.post(endpoint + 'doug-feed:/', JSON.stringify(channel)).pipe(
+      tap(_ => console.log(`updated channel hash=${hash}`)),
+      catchError(this.handleError<any>('updateProduct'))
+    );
+  }
+
+  private handleError<T> (operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+
+      // TODO: send the error to remote logging infrastructure
+      console.error(error); // log to console instead
+
+      // TODO: better job of transforming error for user consumption
+      console.log(`${operation} failed: ${error.message}`);
+
+      // Let the app keep running by returning an empty result.
+      return of(result as T);
+    };
   }
 
   private setupWeb3() {
@@ -27,7 +68,7 @@ export class SwarmService {
       this._web3 = new Web3(window.web3.currentProvider);
 
       this.getNetworkID().then((netID) => {
-        this.verifyRopstenIsActive(netID);
+        // this.verifyRopstenIsActive(netID);
       });
       this.getNetworkName();
     } else {
@@ -59,7 +100,7 @@ export class SwarmService {
         console.log('This is an unknown network.');
     }
     if (netId !== 3) {
-      alert('Please connect to the Ropsten test network');
+      // alert('Please connect to the Ropsten test network.');
     }
   }
 
@@ -142,4 +183,5 @@ export class SwarmService {
       // });
     }) as Promise<number>;
   }
+
 }
