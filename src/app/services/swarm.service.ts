@@ -30,6 +30,7 @@ export class SwarmService {
   private _channel_name: string;
   private _chat_manifest: string;
 
+  feed_manifests: string[] = [];
   networkID: number;
   networkName: string = null;
 
@@ -64,7 +65,7 @@ export class SwarmService {
   updateFeed(chattrMeta: ChattrMeta): Observable<any> {
     return this.http.post(endpoint + 'doug-feed:/', JSON.stringify(chattrMeta), {responseType: 'text'}).pipe(
       tap(feed => console.log('feed: ', feed)),
-      catchError(this.handleError<any>('updateProduct'))
+      catchError(this.handleError<any>('updateFeed'))
     );
   }
 
@@ -83,26 +84,49 @@ export class SwarmService {
 
   updateChat(data: string) {
     if (this._eth_account.length < 1) { console.error('eth_account was not initialized!'); }
+    this._channel_manifest.replace(/[^A-Za-z0-9]/g, '');
+    // console.log('updateChat: ', data);
     const chattrMeta: ChattrMeta = {
       bzzaccount: this._eth_account,
       password:  this._path,
-      name: this._channel_name,
+      name: this._channel_manifest.substr(0, 32),
       data: '0x' + data as string
     };
+    // console.log('🔵 posting to: ', endpoint + 'doug-feed:/');
     return this.http.post(endpoint + 'doug-feed:/', JSON.stringify(chattrMeta), {responseType: 'text'}).pipe(
-      tap(feed => console.log('feed: ', feed)),
-      catchError(this.handleError<any>('updateChannelIdentities'))
+      tap(feed => console.log('updateChat feed: ', feed)),
+      catchError(this.handleError<any>('updateChat'))
+    );
+  }
+
+  fetchChat(manifest_hash: string) {
+    // console.log('fetchChat: ', manifest_hash);
+    return this.http.get(endpoint + `bzz-feed:/${manifest_hash}/?hex=1`, {responseType: 'text'}).pipe(
+      tap(chathash => console.log('chathash: ', chathash)),
+      catchError(this.handleError<any>('fetchChat'))
+    );
+  }
+
+  resolveChat(chat_hash: string) {
+    if (!chat_hash) { return; }
+    console.log('resolveChat: ', chat_hash.substr(2));
+    return this.http.get(endpoint + `bzz:/${chat_hash.substr(2)}/`).pipe(
+      tap(chathash => console.log('chathash: ', chathash)),
+      catchError(this.handleError<any>('resolveChat'))
     );
   }
 
   createInitalChatManifest() {
     if (this._channel_manifest.length < 32) { console.error('channel_mainifest has less than 32 chars.'); }
-    return this.createFeedManifest(this._channel_manifest.substring(0, 32));
+    // sanitize the manifest:
+    this._channel_manifest.replace(/[^A-Za-z0-9]/g, '');
+    return this.createFeedManifest(this._channel_manifest.substr(0, 32));
   }
 
   createFeedManifest(name: string): Observable<any> {
+    console.log('createFeedManifest: ', `bzz-feed:/?user=${this._eth_account}&name=${name}&manifest=1`)
     return this.http.post(endpoint + `bzz-feed:/?user=${this._eth_account}&name=${name}&manifest=1`, '', {responseType: 'text'}).pipe(
-      tap(manifest_feed => console.log('manifest_feed: ', manifest_feed)),
+      tap(manifest_feed => console.log('createdFeedManifest: ', manifest_feed)),
       catchError(this.handleError<any>('updateProduct'))
     );
   }
@@ -116,7 +140,7 @@ export class SwarmService {
 
   uploadContent(content: string): Observable<any> {
     return this.http.post(endpoint + 'bzz:/', content, {responseType: 'text'}).pipe(
-      tap(_ => console.log(`uploaded content`)),
+      tap(_ => console.log(`uploaded content: ${content}`)),
       catchError(this.handleError<any>('uploadContent'))
     );
   }

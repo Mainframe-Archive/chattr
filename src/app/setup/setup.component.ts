@@ -19,13 +19,17 @@ export class SetupComponent implements OnInit {
   isJoinHidden = true;
   isAddHidden = true;
 
-  address = '';
-  path = '';
-  channel = '';
+  address = '02ad4272c7c7ec9a0f79c280f3e82136a832c611';
+  path = '/Users/doug/Desktop/swarm_password2';
+  channel = 'channel1';
   values = [];
   identities = [];
+  constructor(public ss: SwarmService) {
+    this.values['address'] = '02ad4272c7c7ec9a0f79c280f3e82136a832c611';
+    this.values['path'] = '/Users/doug/Desktop/swarm_password2';
+    this.values['channel'] = 'channel1';
 
-  constructor(public ss: SwarmService) { }
+  }
 
   ngOnInit() {
   }
@@ -73,7 +77,9 @@ export class SetupComponent implements OnInit {
     const channel = this.generateChannel(this.values['channel'], []);
     console.log(channel);
     this.ss.createFeedManifest(this.values['channel'] as string).subscribe((manifest: string) => {
+      manifest.replace(/[^A-Za-z0-9]/g, '');
       this.ss.setChannelManifest(manifest, this.values['channel'] as string);
+      console.log('about to upload:⏰ ', channel);
       this.ss.uploadContent(channel).subscribe((data: {}) => {
         console.log(data);
         const channelMeta: ChattrMeta = {
@@ -101,19 +107,28 @@ export class SetupComponent implements OnInit {
 
   createInitialChatFeed() {
     this.ss.createInitalChatManifest().subscribe((manifest: string) => {
-      this.ss.setChatManifest(manifest);
-      this.identities.push(manifest);
+      const cleanManifest = JSON.stringify(manifest).replace(/[^A-Za-z0-9]/g, '');
+      this.ss.setChatManifest(cleanManifest);
+      this.ss.feed_manifests.push(cleanManifest);
+      this.identities.push(cleanManifest);
+
       this.updateChannel();
     });
   }
 
   addUser() {
+    this.values['newUser'].replace(/\W/g, '');
+    if ((this.values['newUser'] as string).substr(0, 2) === '0x') {
+      this.values['newUser'] = (this.values['newUser'] as string).substr(2);
+    }
     this.identities.push(this.values['newUser'] as string);
+    this.ss.feed_manifests.push(JSON.stringify(this.values['newUser']).replace(/[^A-Za-z0-9]/g, ''));
     this.updateChannel();
   }
 
   updateChannel() {
     const channel = this.generateChannel(this.values['channel'] as string, this.identities);
+    console.log('about to upload😻: ', channel);
     this.ss.uploadContent(channel).subscribe((data: string) => {
       this.ss.updateChannelIdentities(data);
     });
