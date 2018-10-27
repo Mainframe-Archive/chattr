@@ -19,25 +19,25 @@
   <div [hidden]="isCreateHidden" class="controls" class="has-addons">
     <div class="field">
       <div class="control is-expanded">
-        <input #box (keyup)="onKey('address', box.value)" class="input is-primary" placeholder="Eth Address">
+        <input #box (keyup)="onKey('address', box.value)" class="input is-primary" value="02ad4272c7c7ec9a0f79c280f3e82136a832c611" placeholder="Eth Address">
       </div>
     </div>
 
     <div class="field">
       <div class="control is-expanded">
-        <input #box2 (keyup)="onKey('path', box2.value)" class="input is-primary" placeholder="Password path">
+        <input #box2 (keyup)="onKey('path', box2.value)" class="input is-primary" value="/Users/doug/Desktop/swarm_password2" placeholder="Password path">
       </div>
     </div>
 
     <div class="field">
       <div class="control is-expanded">
-        <input #box3 (keyup)="onKey('channel', box3.value)" class="input is-primary" placeholder="Channel Name or Hash">
+        <input #box3 (keyup)="onKey('channel', box3.value)" class="input is-primary" value="channel1" placeholder="Channel Name">
       </div>
     </div>
 
     <div class="field is-grouped controls" >
       <div class="control">
-        <button (click)="submit()" [disabled]="!values['channel']" class="button is-primary">Submit</button>
+        <button (click)="submitCreate()" [disabled]="!values['channel']" class="button is-primary">Submit</button>
       </div>
 
       <div class="control">
@@ -60,13 +60,13 @@
     </div>
     <div class="field">
       <div class="control is-expanded">
-        <input #box6 (keyup)="onKey('channel', box6.value)" class="input is-primary" placeholder="Channel Name or Hash">
+        <input #box6 (keyup)="onKey('channel', box6.value)" class="input is-primary" placeholder="Channel Hash">
       </div>
     </div>
 
     <div class="field is-grouped controls" >
       <div class="control">
-        <button (click)="submit()" [disabled]="!values['channel']" class="button is-primary">Submit</button>
+        <button (click)="submitJoin()" [disabled]="!values['channel']" class="button is-primary">Submit</button>
       </div>
 
       <div class="control">
@@ -75,4 +75,17 @@
     </div>
 
   </div>
+
+  <br><br>
+
+  <div class="controls" class="field has-addons">
+      <div [hidden]="isChatHidden" class="control is-expanded">
+        <input #box7 (keyup)="onKey('newUser', box7.value)" class="input is-primary" placeholder="Chat Feed Manifest Hash">
+      </div>
+
+      <div [hidden]="isChatHidden" class="control">
+        <button (click)="addUser()" [disabled]="!values['newUser']" class="button is-primary">Add User</button>
+      </div>
+  </div>
+
 </div>

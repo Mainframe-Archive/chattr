@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import {ChannelMeta} from '../interface/channel';
 
 const Web3 = require('web3'); // tslint:disable-line
 
@@ -23,6 +24,11 @@ export class SwarmService {
 
   private _account: string = null;
   private _web3: any;
+  private _path: string;
+  private _eth_account: string;
+  private _channel_manifest: string;
+  private _channel_name: string;
+  private _chat_manifest: string;
 
   networkID: number;
   networkName: string = null;
@@ -36,15 +42,68 @@ export class SwarmService {
     return body || { };
   }
 
-  getChannel(hash): Observable<any> {
+  setGethParams(path: string, account: string) {
+    this._path = path;
+    this._eth_account = account;
+  }
+
+  setChannelManifest(channel_manifest: string, channel_name: string) {
+    this._channel_manifest = channel_manifest;
+    this._channel_name = channel_name;
+  }
+
+  setChatManifest(chat_manifest: string) {
+    this._chat_manifest = chat_manifest;
+  }
+
+  getChannel(hash: string): Observable<any> {
     return this.http.get(endpoint + 'bzz:/' + hash + '/').pipe(
       map(this.extractData));
   }
 
-  updateChannel(hash, channel): Observable<any> {
-    return this.http.post(endpoint + 'doug-feed:/', JSON.stringify(channel)).pipe(
-      tap(_ => console.log(`updated channel hash=${hash}`)),
+  updateChannel(channelMeta: ChannelMeta): Observable<any> {
+    return this.http.post(endpoint + 'doug-feed:/', JSON.stringify(channelMeta), {responseType: 'text'}).pipe(
+      tap(channel_feed => console.log('channel_feed: ', channel_feed)),
       catchError(this.handleError<any>('updateProduct'))
+    );
+  }
+
+  updateChannelIdentities(data: string) {
+    const channelMeta: ChannelMeta = {
+      bzzaccount: this._eth_account,
+      password:  this._path,
+      name: this._channel_name,
+      data: '0x' + data as string
+    };
+    return this.http.post(endpoint + 'doug-feed:/', JSON.stringify(channelMeta), {responseType: 'text'}).pipe(
+      tap(channel_feed => console.log('channel_feed: ', channel_feed)),
+      catchError(this.handleError<any>('updateChannelIdentities'))
+    );
+  }
+
+  createInitalChatManifest() {
+    if (this._channel_manifest.length < 32) { console.error('channel_mainifest has less than 32 chars.'); }
+    return this.createFeedManifest(this._channel_manifest.substring(0, 32));
+  }
+
+  createFeedManifest(name: string): Observable<any> {
+    return this.http.post(endpoint + `bzz-feed:/?user=${this._eth_account}&name=${name}&manifest=1`, '', {responseType: 'text'}).pipe(
+      tap(manifest_feed => console.log('manifest_feed: ', manifest_feed)),
+      catchError(this.handleError<any>('updateProduct'))
+    );
+  }
+
+  createChannel(channel: string) {
+    return this.http.post(endpoint + 'doug-feed:/', JSON.stringify(channel)).pipe(
+      tap(_ => console.log(`updated channel hash=${channel}`)),
+      catchError(this.handleError<any>('updateProduct'))
+    );
+  }
+
+  uploadContent(content: string): Observable<any> {
+    return this.http.post(endpoint + 'bzz:/', content, {responseType: 'text'}).pipe(
+      tap(_ => console.log(`uploaded content`)),
+      catchError(this.handleError<any>('uploadContent'))
     );
   }
 
