@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {SwarmService} from '../services/swarm.service';
 import {generate} from 'rxjs';
-import { Channel, ChannelMeta } from '../interface/channel';
+import { Channel, ChattrMeta } from '../interface/channel';
 import { Chat } from '../interface/chat';
 
 
@@ -76,7 +76,7 @@ export class SetupComponent implements OnInit {
       this.ss.setChannelManifest(manifest, this.values['channel'] as string);
       this.ss.uploadContent(channel).subscribe((data: {}) => {
         console.log(data);
-        const channelMeta: ChannelMeta = {
+        const channelMeta: ChattrMeta = {
           bzzaccount: this.values['address'] as string,
           password:  this.values['path'] as string,
           name: this.values['channel'] as string,
@@ -84,7 +84,7 @@ export class SetupComponent implements OnInit {
         };
         console.log(channelMeta);
 
-        this.ss.updateChannel(channelMeta).subscribe((channel_feed: string) => {
+        this.ss.updateFeed(channelMeta).subscribe((channel_feed: string) => {
           this.ss.setGethParams(this.values['path'], this.values['address']);
           this.createInitialChatFeed();
         });
@@ -133,21 +133,5 @@ export class SetupComponent implements OnInit {
 
     return JSON.stringify(channel);
   }
-
-  generateChat(body: string) {
-    const chat: Chat = {
-      protocol: 'swarmchat/v0.1',
-      utc_timestamp: Date.now() / 1000,
-      previous_event_pointer: '',
-      type: 'message',
-      payload: {
-        body: body
-      }
-    };
-
-    return chat;
-  }
-
-
 
 }

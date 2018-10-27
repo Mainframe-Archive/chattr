@@ -11,7 +11,7 @@ export interface Channel {
   payload: ChannelPayload;
 }
 
-export interface ChannelMeta {
+export interface ChattrMeta {
   bzzaccount: string;
   password: string;
   name: string;

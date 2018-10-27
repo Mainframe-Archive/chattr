@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import {ChannelMeta} from '../interface/channel';
+import {ChattrMeta} from '../interface/channel';
 
 const Web3 = require('web3'); // tslint:disable-line
 
@@ -61,15 +61,15 @@ export class SwarmService {
       map(this.extractData));
   }
 
-  updateChannel(channelMeta: ChannelMeta): Observable<any> {
-    return this.http.post(endpoint + 'doug-feed:/', JSON.stringify(channelMeta), {responseType: 'text'}).pipe(
-      tap(channel_feed => console.log('channel_feed: ', channel_feed)),
+  updateFeed(chattrMeta: ChattrMeta): Observable<any> {
+    return this.http.post(endpoint + 'doug-feed:/', JSON.stringify(chattrMeta), {responseType: 'text'}).pipe(
+      tap(feed => console.log('feed: ', feed)),
       catchError(this.handleError<any>('updateProduct'))
     );
   }
 
   updateChannelIdentities(data: string) {
-    const channelMeta: ChannelMeta = {
+    const channelMeta: ChattrMeta = {
       bzzaccount: this._eth_account,
       password:  this._path,
       name: this._channel_name,
@@ -77,6 +77,20 @@ export class SwarmService {
     };
     return this.http.post(endpoint + 'doug-feed:/', JSON.stringify(channelMeta), {responseType: 'text'}).pipe(
       tap(channel_feed => console.log('channel_feed: ', channel_feed)),
+      catchError(this.handleError<any>('updateChannelIdentities'))
+    );
+  }
+
+  updateChat(data: string) {
+    if (this._eth_account.length < 1) { console.error('eth_account was not initialized!'); }
+    const chattrMeta: ChattrMeta = {
+      bzzaccount: this._eth_account,
+      password:  this._path,
+      name: this._channel_name,
+      data: '0x' + data as string
+    };
+    return this.http.post(endpoint + 'doug-feed:/', JSON.stringify(chattrMeta), {responseType: 'text'}).pipe(
+      tap(feed => console.log('feed: ', feed)),
       catchError(this.handleError<any>('updateChannelIdentities'))
     );
   }
