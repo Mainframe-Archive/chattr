@@ -9,6 +9,8 @@ import { ChannelMembersComponent } from './channel-members/channel-members.compo
 import { MessageBoxComponent } from './message-box/message-box.component';
 import { MessageComponent } from './message/message.component';
 import { MessageInputComponent } from './message-input/message-input.component';
+import { ChannelInputComponent } from './channel-input/channel-input.component';
+import { SetupComponent } from './setup/setup.component';
 
 
 @NgModule({
@@ -18,7 +20,9 @@ import { MessageInputComponent } from './message-input/message-input.component';
     ChannelMembersComponent,
     MessageBoxComponent,
     MessageComponent,
-    MessageInputComponent
+    MessageInputComponent,
+    ChannelInputComponent,
+    SetupComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,8 @@
+<div class="controls" class="field has-addons">
+  <div class="control is-expanded">
+    <input  [ngModel]="channel_name" class="input is-primary" placeholder="Channel Name">
+  </div>
+  <div class="control">
+    <button (click)="send" [disabled]="!channel_name" class="button is-primary">Send</button>
+  </div>
+</div>
