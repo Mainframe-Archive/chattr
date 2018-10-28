@@ -1,12 +1,15 @@
 <div>
 
-    <div class="notification is-info" [hidden]="isNotificationHidden">
-      <button class="delete" (click)="toggleHideNotification()"></button>
-      Manifest hash: {{manifest_hash}}
-    </div>
-    <br />
-    <br />
+  <div class="notification is-info" [hidden]="isNotificationHidden">
+    <button class="delete" (click)="toggleHideNotification()"></button>
+    Manifest hash: {{manifest_hash}}
+  </div>
 
+  <div [hidden]="isNotificationHidden">
+    <br />
+    <br />
+  </div>
+  
   <div class="field is-grouped controls" >
     <p [hidden]="isDialogueHidden" class="control">
       <a (click)="showCreate()" class="button is-primary is-large">
@@ -20,7 +23,7 @@
     </p>
   </div>
 
-  <app-identity [hidden]="isChatHidden" ></app-identity>
+  <!--<app-identity [hidden]="isChatHidden" ></app-identity>-->
   <app-message-box [hidden]="isChatHidden"></app-message-box>
 
   <div [hidden]="isCreateHidden" class="controls" class="has-addons">
@@ -91,13 +94,13 @@
   <br><br>
 
   <div class="controls" class="field has-addons">
-      <div [hidden]="isChatHidden" class="control is-expanded">
-        <input #box7 (keyup)="onKey('newUser', box7.value)" class="input is-primary" placeholder="Chat Feed Manifest Hash">
-      </div>
+    <div [hidden]="isChatHidden" class="control is-expanded">
+      <input #box7 (keyup)="onKey('newUser', box7.value)" class="input is-primary" placeholder="Chat Feed Manifest Hash">
+    </div>
 
-      <div [hidden]="isChatHidden" class="control">
-        <button (click)="addUser()" [disabled]="!values['newUser']" class="button is-primary">Add User</button>
-      </div>
+    <div [hidden]="isChatHidden" class="control">
+      <button (click)="addUser()" [disabled]="!values['newUser']" class="button is-primary">Add User</button>
+    </div>
   </div>
 
 </div>

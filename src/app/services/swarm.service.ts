@@ -50,7 +50,6 @@ export class SwarmService {
   }
 
   setChannelManifest(channel_manifest: string, channel_name: string) {
-    console.log('setChannelManifest: ', channel_manifest, channel_name);
     this._channel_manifest = channel_manifest;
     this._channel_name = channel_name;
   }
@@ -63,18 +62,12 @@ export class SwarmService {
     this._owners_eth_account = address;
   }
 
-  getChannel(hash: string): Observable<any> {
-    return this.http.get(endpoint + 'bzz:/' + hash + '/').pipe(
-      map(this.extractData));
-  }
-
   fetchChannelFromName(name: string) { // this call returns the current value of the feed. Not the feed address it'self.
-    // console.log('fetchChat: ', manifest_hash);
     if (name === '' && this._channel_name) {
       name = this._channel_name;
     }
-    if (name === ''){
-      console.error('Probelm fetchChannelFromName');
+    if (name === '') {
+      console.error('Problem fetchChannelFromName');
     }
     return this.http.get(endpoint + `bzz-feed:/?user=${this._owners_eth_account}&name=${name}&hex=1`, {responseType: 'text'}).pipe(
       tap(channelHash => console.log('channelHash: ', channelHash)),
@@ -86,7 +79,6 @@ export class SwarmService {
     if (manifest_hash.substr(0 , 2) === '0x') {
       manifest_hash = manifest_hash.substr(2);
     }
-    console.log('fetchChat: ', manifest_hash);
     return this.http.get(endpoint + `bzz-feed:/${manifest_hash}/?hex=1`, {responseType: 'text'}).pipe(
       tap(chathash => console.log('chathash: ', chathash)),
       catchError(this.handleError<any>('fetchChannelFromHash'))
@@ -107,10 +99,9 @@ export class SwarmService {
       name: this._channel_name,
       data: '0x' + data as string
     };
-    console.log('💊💊💊💊💊💊💊💊', channelMeta);
     return this.http.post(endpoint + 'doug-feed:/', JSON.stringify(channelMeta), {responseType: 'text'}).pipe(
-      tap(channel_feed => console.log('💊💊channel_feed: ', channel_feed)),
-      catchError(this.handleError<any>('💊💊updateChannelIdentities'))
+      tap(channel_feed => console.log('channel_feed: ', channel_feed)),
+      catchError(this.handleError<any>('updateChannelIdentities'))
     );
   }
 
@@ -121,15 +112,12 @@ export class SwarmService {
     if (data.substr(0 , 2) === '0x') {
       data = data.substr(2);
     }
-    console.log('updateChat: ', data);
     const chattrMeta: ChattrMeta = {
       bzzaccount: this._eth_account,
       password:  this._path,
       name: this._channel_manifest.substr(0, 32),
       data: '0x' + data as string
     };
-    console.log('🔵 posting to: ', endpoint + 'doug-feed:/');
-    console.log('🔵 posting: ', chattrMeta);
     return this.http.post(endpoint + 'doug-feed:/', JSON.stringify(chattrMeta), {responseType: 'text'}).pipe(
       tap(feed => console.log('updateChat feed: ', feed)),
       catchError(this.handleError<any>('updateChat'))
@@ -137,7 +125,6 @@ export class SwarmService {
   }
 
   fetchChat(manifest_hash: string) {
-    // console.log('fetchChat: ', manifest_hash);
     return this.http.get(endpoint + `bzz-feed:/${manifest_hash}/?hex=1`, {responseType: 'text'}).pipe(
       tap(chathash => console.log('chathash: ', chathash)),
       catchError(this.handleError<any>('fetchChat'))
@@ -151,7 +138,6 @@ export class SwarmService {
     }
     channel_hash = JSON.stringify(channel_hash).replace(/[^A-Za-z0-9]/g, '');
 
-    console.log('resolveChannel: ', channel_hash);
     return this.http.get(endpoint + `bzz:/${channel_hash}/`).pipe(
       tap(channel => console.log('resolveChannel: ', channel)),
       catchError(this.handleError<any>('resolveChannel'))
@@ -163,7 +149,6 @@ export class SwarmService {
     if (chat_hash.substr(0 , 2) === '0x') {
       chat_hash = chat_hash.substr(2);
     }
-    console.log('resolveChat: ', chat_hash);
     return this.http.get(endpoint + `bzz:/${chat_hash}/`).pipe(
       tap(chathash => console.log('chathash: ', chathash)),
       catchError(this.handleError<any>('resolveChat'))
@@ -180,16 +165,8 @@ export class SwarmService {
   }
 
   createFeedManifest(name: string): Observable<any> {
-    console.log('createFeedManifest: ', `bzz-feed:/?user=${this._eth_account}&name=${name}&manifest=1`)
     return this.http.post(endpoint + `bzz-feed:/?user=${this._eth_account}&name=${name}&manifest=1`, '', {responseType: 'text'}).pipe(
       tap(manifest_feed => console.log('createdFeedManifest: ', manifest_feed)),
-      catchError(this.handleError<any>('updateProduct'))
-    );
-  }
-
-  createChannel(channel: string) {
-    return this.http.post(endpoint + 'doug-feed:/', JSON.stringify(channel)).pipe(
-      tap(_ => console.log(`updated channel hash=${channel}`)),
       catchError(this.handleError<any>('updateProduct'))
     );
   }

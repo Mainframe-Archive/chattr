@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {SwarmService} from '../services/swarm.service';
-import {generate} from 'rxjs';
 import { Channel, ChattrMeta } from '../interface/channel';
-import { Chat } from '../interface/chat';
 
 
 @Component({
@@ -64,7 +62,6 @@ export class SetupComponent implements OnInit {
   }
 
   onKey(key: string, value: string) {
-    // console.log(key, value);
     this.values[key] = value;
   }
 
@@ -83,16 +80,13 @@ export class SetupComponent implements OnInit {
 
       this.ss.setChannelManifest(cleanManifest, this.values['channel'] as string);
       const channel = this.generateChannel(this.values['channel'], cleanManifest, []);
-      console.log('about to upload:⏰ ', channel);
       this.ss.uploadContent(channel).subscribe((data: {}) => {
-        console.log(data);
         const channelMeta: ChattrMeta = {
           bzzaccount: this.values['myAddress'] as string,
           password:  this.values['path'] as string,
           name: this.values['channel'] as string,
           data: '0x' + data as string
         };
-        console.log(channelMeta);
 
         this.ss.updateFeed(channelMeta).subscribe((channel_feed: string) => {
           this.createInitialChatFeed();
@@ -116,35 +110,20 @@ export class SetupComponent implements OnInit {
 
     this.ss.setGethParams(this.values['path'] as string, this.values['myAddress'] as string);
     this.ss.setOwnersEthAddress(this.values['address'] as string);
-    // I need to create my user feed. and provide user 0 with my manifest hash, and subscribe to the channel manifest.
-    //given the name of the channel return it's manifest hash.
     this.ss.fetchChannelFromName(this.values['channel']).subscribe((manifest: string) => {
-      console.log('119: ', manifest);
       this.ss.resolveChannel(manifest).subscribe((channel: any) => {
-        console.log('channel: before parse: ', channel);
-        console.log('channel.payload.name: ', channel.payload.name);
-        console.log('channel: before parse: ', channel.previous_event_pointer);
         const channelManifest = JSON.stringify(manifest).replace(/[^A-Za-z0-9]/g, '');
 
-        // I am setting the wrong channel manifest here or I am resolving it wrong - goona comment out the resolve on 119
         if (channel.previous_event_pointer && channel.previous_event_pointer !== '') {
           this.ss.setChannelManifest(channel.previous_event_pointer, this.values['channel']);
-          console.log('✅✅✅✅✅✅✅✅');
         } else {
-          console.log('❌❌❌❌❌❌❌❌');
           this.ss.setChannelManifest(channelManifest, this.values['channel']);
         }
-        // this.ss.setChannelManifest('', this.values['channel']); // Hacky I know._
         this.ss.createInitalChatManifest().subscribe((chat_manifest: string) => {
           const cleanManifest = JSON.stringify(chat_manifest).replace(/[^A-Za-z0-9]/g, '');
           this.manifest_hash = cleanManifest;
           this.isNotificationHidden = false;
           this.ss.setChatManifest(cleanManifest);
-          // this.ss.feed_manifests.push(cleanManifest);
-          // if ( channel.payload.identities.length < 1 ) { return; }
-          // channel.payload.identities.forEach((id: string) => {
-          //   this.ss.feed_manifests.push(id);
-          // });
         });
       });
     });
@@ -155,10 +134,7 @@ export class SetupComponent implements OnInit {
     this.ss.createInitalChatManifest().subscribe((manifest: string) => {
       const cleanManifest = JSON.stringify(manifest).replace(/[^A-Za-z0-9]/g, '');
       this.ss.setChatManifest(cleanManifest);
-      // this.ss.feed_manifests.push(cleanManifest);
-      console.log('🏁🏁🏁🏁 adding an identity: ', cleanManifest);
       this.identities.push(cleanManifest);
-
       this.updateChannel();
     });
   }
@@ -169,19 +145,13 @@ export class SetupComponent implements OnInit {
       this.values['newUser'] = (this.values['newUser'] as string).substr(2);
     }
     this.identities.push(this.values['newUser'] as string);
-    console.log('🏁🏁🏁🏁 adding an identity2: ', this.values['newUser']);
-
-    // this.ss.feed_manifests.push(JSON.stringify(this.values['newUser']).replace(/[^A-Za-z0-9]/g, ''));
     this.updateChannel();
   }
 
   updateChannel() {
     const channel = this.generateChannel(this.values['channel'] as string, this.ss._channel_manifest, this.identities);
-    console.log('about to upload😻: ', channel);
     this.ss.uploadContent(channel).subscribe((data: string) => {
-      console.log('🔋😻🔋😻🔋 uploaded hash: ', data);
       this.ss.updateChannelIdentities(data).subscribe((result: string) => {
-        console.log('🔋😻: ', result);
       });
     });
   }
@@ -197,12 +167,10 @@ export class SetupComponent implements OnInit {
         identities: identities
       }
     };
-
     return JSON.stringify(channel);
   }
 
   toggleHideNotification() {
     this.isNotificationHidden = !this.isNotificationHidden;
   }
-
 }

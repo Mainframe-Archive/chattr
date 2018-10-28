@@ -35,33 +35,22 @@ export class MessageBoxComponent implements OnInit {
        console.log('1135: ', this.ss._channel_manifest, this.ss._channel_name);
        this.ss.fetchChannelFromName('').subscribe((channel_hash: any) => {
          if ( !channel_hash ) { return; }
-         console.log('🔺fetchChannelFromName: ', channel_hash);
          this.ss.resolveChannel(channel_hash).subscribe((channel: any) => {
-           console.log('resolveChannel🔔: ', channel);
            if ( channel.payload.identities.length !== this.ss.feed_manifests.length ) {
              this.ss.feed_manifests = channel.payload.identities;
-             // channel.payload.identities.forEach((id: string) => {
-             //   this.ss.feed_manifests.push(id);
-             // });
            }
-         }):
+         });
        });
      } else {
        this.ss.fetchChannelFromHash(this.ss._channel_manifest).subscribe((channel_hash: any) => {
          if (!channel_hash) {
            return;
          }
-         console.log('36🔺: ', channel_hash);
          this.ss.resolveChannel(channel_hash).subscribe((channel: any) => {
-           console.log('40🔔: ', channel);
            if (channel.payload.identities.length !== this.ss.feed_manifests.length) {
              this.ss.feed_manifests = channel.payload.identities;
-             // channel.payload.identities.forEach((id: string) => {
-             //   this.ss.feed_manifests.push(id);
-             // });
            }
-         })
-       :
+         });
        });
      }
 
@@ -89,9 +78,6 @@ export class MessageBoxComponent implements OnInit {
 
   processChatPoll(manifest_hash: string, chat: Chat) {
     // check if the hash has changed.
-    console.log('🔴processChatPoll: ', chat);
-    console.log('🔴🔴chat.payload: ', chat.payload);
-
     const message = new Message();
     message.user = manifest_hash.substr(manifest_hash.length - 6);
     message.date = chat.utc_timestamp;
@@ -104,7 +90,6 @@ export class MessageBoxComponent implements OnInit {
 
     this.messages = this.sorted_messages;
     console.log(this.all_messages);
-
   }
 
 }
