@@ -1,5 +1,12 @@
 <div>
 
+    <div class="notification is-info" [hidden]="isNotificationHidden">
+      <button class="delete" (click)="toggleHideNotification()"></button>
+      Manifest hash: {{manifest_hash}}
+    </div>
+    <br />
+    <br />
+
   <div class="field is-grouped controls" >
     <p [hidden]="isDialogueHidden" class="control">
       <a (click)="showCreate()" class="button is-primary is-large">
@@ -19,7 +26,7 @@
   <div [hidden]="isCreateHidden" class="controls" class="has-addons">
     <div class="field">
       <div class="control is-expanded">
-        <input #box (keyup)="onKey('address', box.value)" class="input is-primary" value="02ad4272c7c7ec9a0f79c280f3e82136a832c611" placeholder="Eth Address">
+        <input #box (keyup)="onKey('myAddress', box.value)" class="input is-primary" value="02ad4272c7c7ec9a0f79c280f3e82136a832c611" placeholder="Eth Address">
       </div>
     </div>
 
@@ -50,17 +57,22 @@
   <div [hidden]="isJoinHidden" class="controls" class="has-addons">
     <div class="field">
       <div class="control is-expanded">
-        <input #box4 (keyup)="onKey('address', box4.value)" class="input is-primary" placeholder="Eth Address">
+        <input #box4 (keyup)="onKey('channel', box4.value)" class="input is-primary" placeholder="Channel Name">
       </div>
     </div>
     <div class="field">
       <div class="control is-expanded">
-        <input #box5 (keyup)="onKey('path', box5.value)" class="input is-primary" placeholder="Password path">
+        <input #box5 (keyup)="onKey('address', box5.value)" class="input is-primary" placeholder="Owner's Eth Address">
       </div>
     </div>
     <div class="field">
       <div class="control is-expanded">
-        <input #box6 (keyup)="onKey('channel', box6.value)" class="input is-primary" placeholder="Channel Hash">
+        <input #box15 (keyup)="onKey('myAddress', box15.value)" class="input is-primary" value="0c6adf0c9518c33b56d39e1193150ad2dcbe1488" placeholder="My Eth Address">
+      </div>
+    </div>
+    <div class="field">
+      <div class="control is-expanded">
+        <input #box6 (keyup)="onKey('path', box6.value)" class="input is-primary" value="/Users/doug/Desktop/swarm_password" placeholder="Password Path">
       </div>
     </div>
 

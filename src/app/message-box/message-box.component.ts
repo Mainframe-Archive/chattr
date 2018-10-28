@@ -30,6 +30,24 @@ export class MessageBoxComponent implements OnInit {
 
   ngOnInit() {
    interval(this.interval).subscribe((next) => {
+
+     if( !this.ss._channel_manifest ) { return; }
+     console.log('35: ', this.ss._channel_manifest);
+     this.ss.fetchChannel(this.ss._channel_manifest).subscribe((channel_hash: any) => {
+       if ( !channel_hash ) { return; }
+       console.log('36🔺: ', channel_hash);
+       this.ss.resolveChannel(channel_hash).subscribe((channel: any) => {
+         console.log('40🔔: ', channel);
+         if ( channel.payload.identities.length !== this.ss.feed_manifests.length ) {
+           this.ss.feed_manifests = channel.payload.identities;
+           // channel.payload.identities.forEach((id: string) => {
+           //   this.ss.feed_manifests.push(id);
+           // });
+         }
+       }):
+     });
+
+
      console.log('checking if I should poll for manifest.');
      if (this.ss.feed_manifests.length > 0) {
         this.ss.feed_manifests.forEach((manifest) => {
@@ -44,6 +62,7 @@ export class MessageBoxComponent implements OnInit {
     this.ss.fetchChat(manifest_hash).subscribe((content_hash: string) => {
       if (manifest_hash === this.last_manifest_hashes[content_hash] as string) { return; }
       this.last_manifest_hashes[content_hash] = manifest_hash;
+      console.log('47: ', content_hash);
       this.ss.resolveChat(content_hash).subscribe((chat: Chat) => {
         this.processChatPoll(manifest_hash, chat);
       });

@@ -26,11 +26,12 @@ export class SwarmService {
   private _web3: any;
   private _path: string;
   private _eth_account: string;
-  private _channel_manifest: string;
+  private _owners_eth_account: string;
   private _channel_name: string;
   private _chat_manifest: string;
-
   feed_manifests: string[] = [];
+
+  _channel_manifest: string;
   networkID: number;
   networkName: string = null;
 
@@ -57,9 +58,32 @@ export class SwarmService {
     this._chat_manifest = chat_manifest;
   }
 
+  setOwnersEthAddress(address: string) {
+    this._owners_eth_account = address;
+  }
+
   getChannel(hash: string): Observable<any> {
     return this.http.get(endpoint + 'bzz:/' + hash + '/').pipe(
       map(this.extractData));
+  }
+
+  fetchChannelManifest(name: string) {
+    // console.log('fetchChat: ', manifest_hash);
+    return this.http.get(endpoint + `bzz-feed:/?user=${this._owners_eth_account}&name=${name}&hex=1`, {responseType: 'text'}).pipe(
+      tap(channelHash => console.log('channelHash: ', channelHash)),
+      catchError(this.handleError<any>('fetchChannelManifest'))
+    );
+  }
+
+  fetchChannel(manifest_hash: string) {
+    if (manifest_hash.substr(0 , 2) === '0x') {
+      manifest_hash = manifest_hash.substr(2);
+    }
+    console.log('fetchChat: ', manifest_hash);
+    return this.http.get(endpoint + `bzz-feed:/${manifest_hash}/?hex=1`, {responseType: 'text'}).pipe(
+      tap(chathash => console.log('chathash: ', chathash)),
+      catchError(this.handleError<any>('fetchChannel'))
+    );
   }
 
   updateFeed(chattrMeta: ChattrMeta): Observable<any> {
@@ -76,15 +100,20 @@ export class SwarmService {
       name: this._channel_name,
       data: '0x' + data as string
     };
+    console.log('💊💊💊💊💊💊💊💊', channelMeta);
     return this.http.post(endpoint + 'doug-feed:/', JSON.stringify(channelMeta), {responseType: 'text'}).pipe(
-      tap(channel_feed => console.log('channel_feed: ', channel_feed)),
-      catchError(this.handleError<any>('updateChannelIdentities'))
+      tap(channel_feed => console.log('💊💊channel_feed: ', channel_feed)),
+      catchError(this.handleError<any>('💊💊updateChannelIdentities'))
     );
   }
 
   updateChat(data: string) {
     if (this._eth_account.length < 1) { console.error('eth_account was not initialized!'); }
-    this._channel_manifest.replace(/[^A-Za-z0-9]/g, '');
+    this._channel_manifest = JSON.stringify(this._channel_manifest).replace(/[^A-Za-z0-9]/g, '');
+    data = JSON.stringify(data).replace(/[^A-Za-z0-9]/g, '');
+    if (data.substr(0 , 2) === '0x') {
+      data = data.substr(2);
+    }
     // console.log('updateChat: ', data);
     const chattrMeta: ChattrMeta = {
       bzzaccount: this._eth_account,
@@ -107,10 +136,27 @@ export class SwarmService {
     );
   }
 
+  resolveChannel(channel_hash: string) {
+    if (!channel_hash) { return; }
+    if (channel_hash.substr(0 , 2) === '0x') {
+      channel_hash = channel_hash.substr(2);
+    }
+    channel_hash = JSON.stringify(channel_hash).replace(/[^A-Za-z0-9]/g, '');
+
+    console.log('resolveChannel: ', channel_hash);
+    return this.http.get(endpoint + `bzz:/${channel_hash}/`).pipe(
+      tap(channel => console.log('resolveChannel: ', channel)),
+      catchError(this.handleError<any>('resolveChannel'))
+    );
+  }
+
   resolveChat(chat_hash: string) {
     if (!chat_hash) { return; }
-    console.log('resolveChat: ', chat_hash.substr(2));
-    return this.http.get(endpoint + `bzz:/${chat_hash.substr(2)}/`).pipe(
+    if (chat_hash.substr(0 , 2) === '0x') {
+      chat_hash = chat_hash.substr(2);
+    }
+    console.log('resolveChat: ', chat_hash);
+    return this.http.get(endpoint + `bzz:/${chat_hash}/`).pipe(
       tap(chathash => console.log('chathash: ', chathash)),
       catchError(this.handleError<any>('resolveChat'))
     );
@@ -118,8 +164,10 @@ export class SwarmService {
 
   createInitalChatManifest() {
     if (this._channel_manifest.length < 32) { console.error('channel_mainifest has less than 32 chars.'); }
-    // sanitize the manifest:
-    this._channel_manifest.replace(/[^A-Za-z0-9]/g, '');
+    if (this._channel_manifest.substr(0 , 2) === '0x') {
+      this._channel_manifest = this._channel_manifest.substr(2);
+    }
+    this._channel_manifest = JSON.stringify(this._channel_manifest).replace(/[^A-Za-z0-9]/g, '');
     return this.createFeedManifest(this._channel_manifest.substr(0, 32));
   }
 
@@ -244,14 +292,14 @@ export class SwarmService {
       this._account = await new Promise((resolve, reject) => {
         this._web3.eth.getAccounts((err, accs) => {
           if (err != null) {
-            alert('There was an error fetching your accounts.');
+            // alert('There was an error fetching your accounts.');
             return;
           }
 
           if (accs.length === 0) {
-            alert(
-              'Couldn\'t get any accounts! Make sure your Ethereum client is configured correctly.'
-            );
+            // alert(
+            //   'Couldn\'t get any accounts! Make sure your Ethereum client is configured correctly.'
+            // );
             return;
           }
           resolve(accs[0]);
