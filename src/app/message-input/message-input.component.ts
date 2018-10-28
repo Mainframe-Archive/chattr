@@ -30,6 +30,7 @@ export class MessageInputComponent implements OnInit {
     const chat = JSON.stringify(this.generateChat(this.message));
     console.log('about to upload:😝 ', chat);
     this.ss.uploadContent(chat).subscribe((hash: string) => {
+      console.log('uploded: ', hash);
       this.ss.updateChat(hash).subscribe((chatFeed: string) => {
         console.log('chatFeed: ', chatFeed);
       });

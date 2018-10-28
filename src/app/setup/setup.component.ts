@@ -31,7 +31,6 @@ export class SetupComponent implements OnInit {
     this.values['myAddress'] = '02ad4272c7c7ec9a0f79c280f3e82136a832c611';
     this.values['path'] = '/Users/doug/Desktop/swarm_password2';
     this.values['channel'] = 'channel1';
-
   }
 
   ngOnInit() {
@@ -70,6 +69,7 @@ export class SetupComponent implements OnInit {
   }
 
   submitCreate() {
+    this.ss.user_type_is_creator = true;
     console.log('submit was clicked: ', this.values['address'], this.values['path'], this.values['channel']);
 
     this.isChatHidden = false;
@@ -78,12 +78,11 @@ export class SetupComponent implements OnInit {
     this.isCreateHidden = true;
     this.ss.setGethParams(this.values['path'], this.values['myAddress']);
     this.ss.setOwnersEthAddress(this.values['myAddress'] as string);
-    const channel = this.generateChannel(this.values['channel'], []);
-    console.log(channel);
     this.ss.createFeedManifest(this.values['channel'] as string).subscribe((manifest: string) => {
       const cleanManifest = JSON.stringify(manifest).replace(/[^A-Za-z0-9]/g, '');
 
       this.ss.setChannelManifest(cleanManifest, this.values['channel'] as string);
+      const channel = this.generateChannel(this.values['channel'], cleanManifest, []);
       console.log('about to upload:⏰ ', channel);
       this.ss.uploadContent(channel).subscribe((data: {}) => {
         console.log(data);
@@ -103,6 +102,10 @@ export class SetupComponent implements OnInit {
   }
 
   submitJoin() {
+    if (this.values['myAddress'] === '02ad4272c7c7ec9a0f79c280f3e82136a832c611') {
+      this.values['myAddress'] = '0c6adf0c9518c33b56d39e1193150ad2dcbe1488';
+      this.values['path'] = '/Users/doug/Desktop/swarm_password';
+    }
     console.log('submit was clicked: ', this.values['myAddress'], this.values['address'], this.values['path'], this.values['channel']);
 
     this.isChatHidden = false;
@@ -114,14 +117,24 @@ export class SetupComponent implements OnInit {
     this.ss.setGethParams(this.values['path'] as string, this.values['myAddress'] as string);
     this.ss.setOwnersEthAddress(this.values['address'] as string);
     // I need to create my user feed. and provide user 0 with my manifest hash, and subscribe to the channel manifest.
-    this.ss.fetchChannelManifest(this.values['channel']).subscribe((manifest: string) => {
+    //given the name of the channel return it's manifest hash.
+    this.ss.fetchChannelFromName(this.values['channel']).subscribe((manifest: string) => {
       console.log('119: ', manifest);
       this.ss.resolveChannel(manifest).subscribe((channel: any) => {
         console.log('channel: before parse: ', channel);
-        console.log('channel: before parse: ', channel.payload.name);
+        console.log('channel.payload.name: ', channel.payload.name);
+        console.log('channel: before parse: ', channel.previous_event_pointer);
         const channelManifest = JSON.stringify(manifest).replace(/[^A-Za-z0-9]/g, '');
 
-        this.ss.setChannelManifest(channelManifest, this.values['channel']);
+        // I am setting the wrong channel manifest here or I am resolving it wrong - goona comment out the resolve on 119
+        if (channel.previous_event_pointer && channel.previous_event_pointer !== '') {
+          this.ss.setChannelManifest(channel.previous_event_pointer, this.values['channel']);
+          console.log('✅✅✅✅✅✅✅✅');
+        } else {
+          console.log('❌❌❌❌❌❌❌❌');
+          this.ss.setChannelManifest(channelManifest, this.values['channel']);
+        }
+        // this.ss.setChannelManifest('', this.values['channel']); // Hacky I know._
         this.ss.createInitalChatManifest().subscribe((chat_manifest: string) => {
           const cleanManifest = JSON.stringify(chat_manifest).replace(/[^A-Za-z0-9]/g, '');
           this.manifest_hash = cleanManifest;
@@ -163,7 +176,7 @@ export class SetupComponent implements OnInit {
   }
 
   updateChannel() {
-    const channel = this.generateChannel(this.values['channel'] as string, this.identities);
+    const channel = this.generateChannel(this.values['channel'] as string, this.ss._channel_manifest, this.identities);
     console.log('about to upload😻: ', channel);
     this.ss.uploadContent(channel).subscribe((data: string) => {
       console.log('🔋😻🔋😻🔋 uploaded hash: ', data);
@@ -173,11 +186,11 @@ export class SetupComponent implements OnInit {
     });
   }
 
-  generateChannel(name: string, identities: string[]) {
+  generateChannel(name: string, manifest_hash: string, identities: string[]) {
     const channel: Channel = {
       protocol: 'swarmchat/v0.1',
       utc_timestamp: Date.now() / 1000,
-      previous_event_pointer: '', // TODO: implement previous_event_pointer
+      previous_event_pointer: manifest_hash, // TODO: implement previous_event_pointer
       type: 'channel',
       payload: {
         name: name,

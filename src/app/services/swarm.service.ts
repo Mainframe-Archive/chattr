@@ -27,10 +27,10 @@ export class SwarmService {
   private _path: string;
   private _eth_account: string;
   private _owners_eth_account: string;
-  private _channel_name: string;
   private _chat_manifest: string;
+  _channel_name: string;
   feed_manifests: string[] = [];
-
+  user_type_is_creator = false;
   _channel_manifest: string;
   networkID: number;
   networkName: string = null;
@@ -50,6 +50,7 @@ export class SwarmService {
   }
 
   setChannelManifest(channel_manifest: string, channel_name: string) {
+    console.log('setChannelManifest: ', channel_manifest, channel_name);
     this._channel_manifest = channel_manifest;
     this._channel_name = channel_name;
   }
@@ -67,22 +68,28 @@ export class SwarmService {
       map(this.extractData));
   }
 
-  fetchChannelManifest(name: string) {
+  fetchChannelFromName(name: string) { // this call returns the current value of the feed. Not the feed address it'self.
     // console.log('fetchChat: ', manifest_hash);
+    if (name === '' && this._channel_name) {
+      name = this._channel_name;
+    }
+    if (name === ''){
+      console.error('Probelm fetchChannelFromName');
+    }
     return this.http.get(endpoint + `bzz-feed:/?user=${this._owners_eth_account}&name=${name}&hex=1`, {responseType: 'text'}).pipe(
       tap(channelHash => console.log('channelHash: ', channelHash)),
-      catchError(this.handleError<any>('fetchChannelManifest'))
+      catchError(this.handleError<any>('fetchChannelFromName'))
     );
   }
 
-  fetchChannel(manifest_hash: string) {
+  fetchChannelFromHash(manifest_hash: string) {
     if (manifest_hash.substr(0 , 2) === '0x') {
       manifest_hash = manifest_hash.substr(2);
     }
     console.log('fetchChat: ', manifest_hash);
     return this.http.get(endpoint + `bzz-feed:/${manifest_hash}/?hex=1`, {responseType: 'text'}).pipe(
       tap(chathash => console.log('chathash: ', chathash)),
-      catchError(this.handleError<any>('fetchChannel'))
+      catchError(this.handleError<any>('fetchChannelFromHash'))
     );
   }
 
@@ -114,14 +121,15 @@ export class SwarmService {
     if (data.substr(0 , 2) === '0x') {
       data = data.substr(2);
     }
-    // console.log('updateChat: ', data);
+    console.log('updateChat: ', data);
     const chattrMeta: ChattrMeta = {
       bzzaccount: this._eth_account,
       password:  this._path,
       name: this._channel_manifest.substr(0, 32),
       data: '0x' + data as string
     };
-    // console.log('🔵 posting to: ', endpoint + 'doug-feed:/');
+    console.log('🔵 posting to: ', endpoint + 'doug-feed:/');
+    console.log('🔵 posting: ', chattrMeta);
     return this.http.post(endpoint + 'doug-feed:/', JSON.stringify(chattrMeta), {responseType: 'text'}).pipe(
       tap(feed => console.log('updateChat feed: ', feed)),
       catchError(this.handleError<any>('updateChat'))

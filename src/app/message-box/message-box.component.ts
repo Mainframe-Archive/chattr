@@ -30,22 +30,40 @@ export class MessageBoxComponent implements OnInit {
 
   ngOnInit() {
    interval(this.interval).subscribe((next) => {
-
-     if( !this.ss._channel_manifest ) { return; }
-     console.log('35: ', this.ss._channel_manifest);
-     this.ss.fetchChannel(this.ss._channel_manifest).subscribe((channel_hash: any) => {
-       if ( !channel_hash ) { return; }
-       console.log('36🔺: ', channel_hash);
-       this.ss.resolveChannel(channel_hash).subscribe((channel: any) => {
-         console.log('40🔔: ', channel);
-         if ( channel.payload.identities.length !== this.ss.feed_manifests.length ) {
-           this.ss.feed_manifests = channel.payload.identities;
-           // channel.payload.identities.forEach((id: string) => {
-           //   this.ss.feed_manifests.push(id);
-           // });
+     if (!this.ss._channel_manifest ) { return; }
+       if ( !this.ss.user_type_is_creator) {
+       console.log('1135: ', this.ss._channel_manifest, this.ss._channel_name);
+       this.ss.fetchChannelFromName('').subscribe((channel_hash: any) => {
+         if ( !channel_hash ) { return; }
+         console.log('🔺fetchChannelFromName: ', channel_hash);
+         this.ss.resolveChannel(channel_hash).subscribe((channel: any) => {
+           console.log('resolveChannel🔔: ', channel);
+           if ( channel.payload.identities.length !== this.ss.feed_manifests.length ) {
+             this.ss.feed_manifests = channel.payload.identities;
+             // channel.payload.identities.forEach((id: string) => {
+             //   this.ss.feed_manifests.push(id);
+             // });
+           }
+         }):
+       });
+     } else {
+       this.ss.fetchChannelFromHash(this.ss._channel_manifest).subscribe((channel_hash: any) => {
+         if (!channel_hash) {
+           return;
          }
-       }):
-     });
+         console.log('36🔺: ', channel_hash);
+         this.ss.resolveChannel(channel_hash).subscribe((channel: any) => {
+           console.log('40🔔: ', channel);
+           if (channel.payload.identities.length !== this.ss.feed_manifests.length) {
+             this.ss.feed_manifests = channel.payload.identities;
+             // channel.payload.identities.forEach((id: string) => {
+             //   this.ss.feed_manifests.push(id);
+             // });
+           }
+         })
+       :
+       });
+     }
 
 
      console.log('checking if I should poll for manifest.');
